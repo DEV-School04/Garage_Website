@@ -5,6 +5,7 @@
  */
 package controllers;
 
+import dao.CustomerDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -12,6 +13,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import models.Customer;
 
 /**
  *
@@ -19,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "LoginUser", urlPatterns = {"/login/user"})
 public class LoginUser extends HttpServlet {
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -30,12 +34,35 @@ public class LoginUser extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
+
         try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
+            // Retrieve parameters
             String name = request.getParameter("name");
             String phoneNumber = request.getParameter("phoneNumber");
-            out.print("<h1>" + name + phoneNumber + "</h1>");
+
+            // Interact with DAO
+            CustomerDAO custDAO = new CustomerDAO();
+            Customer customer;
+            try {
+                customer = custDAO.getCustomerByNameAndPhone(name, phoneNumber);
+            } catch (Exception e) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
+                out.println("Server error occurred while retrieving customer.");
+                return;
+            }
+            // Process customer
+            if (customer != null) {
+                HttpSession session = request.getSession();
+                session.setAttribute("user", customer);
+                response.setStatus(HttpServletResponse.SC_OK); // 200
+                out.println("Customer saved in session.");
+                response.sendRedirect("../index.html");
+            } else {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404
+                out.println("Customer not found.");
+            }
         }
     }
 
