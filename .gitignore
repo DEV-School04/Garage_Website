@@ -32,3 +32,4 @@ Thumbs.db
 *.bak
 /WebApplication2/nbproject/private/
 /Garage_Website/nbproject/private/
+/dist/
