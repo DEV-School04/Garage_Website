@@ -1,9 +1,11 @@
+<%-- 
+    Document   : Dashboard
+    Created on : Feb 10, 2025, 10:05:41 AM
+    Author     : nhutt
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html lang="vi">
     <head>
         <meta charset="UTF-8" />
@@ -22,9 +24,50 @@ and open the template in the editor.
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
             />
+
+        <style>
+            
+            .avatar-btn {
+                font-size: 32px;
+                cursor: pointer;
+                color: #fff;
+                background: transparent;
+                border: none;
+                position: relative;
+            }
+
+            
+            .avatar-btn:hover {
+                color: #007bff;
+            }
+
+            .dropdown-arrow {
+                position: absolute;
+                bottom: -5px;
+                right: -5px;
+                width: 18px;
+                height: 18px;
+                background-color: rgba(0, 0, 0, 0.6);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            /* Dropdown arrow icon */
+            .dropdown-arrow i {
+                color: white;
+                font-size: 12px;
+            }
+        </style>
     </head>
 
     <body>
+        <%
+            if (session.getAttribute("user") == null) {
+                response.sendRedirect("../Login.html");
+            }
+        %>
         <!-- Thanh Điều Hướng -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-transparent fixed-top">
             <div class="container">
@@ -61,22 +104,16 @@ and open the template in the editor.
                         </ul>
                     </div>
                 </div>
-                <div>
-                    <a
-                        class="btn btn-danger"
-                        role="button"
-                        aria-disabled="true"
-                        href="pages/client/SignUp.html"
-
-                        >Đăng ký</a
-                    >
-                    <a
-                        class="btn text-white"
-                        role="button"
-                        aria-disabled="true"
-                        href="pages/client/Login.html"
-                        >Đăng nhập</a
-                    >
+                <div class="dropdown">
+                    <button class="avatar-btn dropdown-toggle" type="button" id="avatarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="avatarDropdown">
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="../LogoutUser">Logout</a></li>
+                    </ul>
                 </div>
             </div>
         </nav>
@@ -85,7 +122,7 @@ and open the template in the editor.
         <header
             class="bg-danger text-white py-5 d-flex align-items-center justify-content-center"
             style="
-            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)), url('images/banner.jpg');
+            background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)), url('../images/banner.jpg');
             background-size: cover;
             background-position: center;
             height: 80vh;
