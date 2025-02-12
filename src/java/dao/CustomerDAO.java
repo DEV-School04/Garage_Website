@@ -66,7 +66,6 @@ public class CustomerDAO {
         Connection connect = null;
         PreparedStatement preSql = null;
         ResultSet resultTable = null;
-        Statement statement = null;
         String sql = "SELECT custID, custName, phone, sex, cusAddress FROM Customer WHERE custName = ? AND phone = ?";
         try {
             connect = MyConnection.getConnection();
@@ -120,4 +119,25 @@ public class CustomerDAO {
         }
     }
 
+    public boolean updateCustomer(String custID, String custName, String phone, String sex, String address) {
+        Connection connect = null;
+        PreparedStatement preSql = null;
+        String sql = "UPDATE Customer SET custID = ?, custName = ?, phone = ?, sex = ?, cusAddress = ?";
+        try {
+            connect = MyConnection.getConnection();
+            preSql = connect.prepareStatement(sql);
+            preSql.setString(1, custID);
+            preSql.setString(2, custName);
+            preSql.setString(3, phone);
+            preSql.setString(4, sex);
+            preSql.setString(5, address);
+            int rowsAffected = preSql.executeUpdate();
+            return rowsAffected > 0;
+        } catch (ClassNotFoundException | SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return false;
+        } finally {
+            closeResources(connect, preSql, null);
+        }
+    }
 }
