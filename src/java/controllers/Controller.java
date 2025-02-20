@@ -7,7 +7,6 @@
 package controllers;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,8 +17,15 @@ import javax.servlet.http.HttpSession;
  *
  * @author nhutt
  */
-public class LogoutUser extends HttpServlet {
-   
+public class Controller extends HttpServlet {
+   private final String DASHBOARD = "Dashboard";
+   private final String LOGIN = "Login";
+   private final String LOGOUT = "Logout";
+   private final String CHANGE_PROFILE_USER = "ChangeProfileUser";
+   private final String ERROR = "Error";
+   public String getUrlPagesJSP (String namePages){
+       return "./pages/" + namePages + ".jsp";
+   }
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
@@ -30,12 +36,38 @@ public class LogoutUser extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            HttpSession session =  request.getSession();
-            session.removeAttribute("user");
-            response.sendRedirect("Login.html");
+        request.setCharacterEncoding("UTF-8");
+        HttpSession session = request.getSession(true);
+        String action = request.getParameter("action");
+        String url = "";
+        if(action == null){
+            action = LOGIN;
+            url = getUrlPagesJSP(LOGIN);
         }
+        if(session.getAttribute("user") != null && !action.equalsIgnoreCase(LOGOUT)){
+            action = DASHBOARD;
+            url = getUrlPagesJSP(DASHBOARD);
+        }
+        switch(action){
+            case LOGIN:
+                url = getUrlPagesJSP(LOGIN);
+                break;
+            case DASHBOARD:
+                url = getUrlPagesJSP(DASHBOARD);
+                break;
+            case LOGOUT:
+                request.getSession().invalidate();
+                url = getUrlPagesJSP(LOGIN);
+                break;
+            case CHANGE_PROFILE_USER:
+                url = CHANGE_PROFILE_USER;
+                break;
+            case ERROR:
+                url = getUrlPagesJSP(ERROR + response.getStatus());
+                break;
+            
+        }
+        request.getRequestDispatcher(url).forward(request, response);
     } 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

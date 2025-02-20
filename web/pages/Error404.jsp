@@ -1,9 +1,11 @@
+<%-- 
+    Document   : Error404
+    Created on : Feb 20, 2025, 6:55:42 AM
+    Author     : nhutt
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html lang="vi">
   <head>
     <title>Lỗi 404</title>
@@ -28,7 +30,7 @@ and open the template in the editor.
             <div class="col-md-6 text-center text-md-start">
               <div class="mb-5">
                 <a
-                  href="../Login.html"
+                  href="Controller"
                   class="d-flex align-items-center gap-2 text-decoration-none"
                 >
                   <i class="bi bi-car-front fs-3 text-black"></i>
@@ -46,14 +48,14 @@ and open the template in the editor.
                 Xin lỗi, trang bạn tìm kiếm không tồn tại hoặc đã được di
                 chuyển.
               </p>
-              <a href="../index.html" class="btn btn-outline-danger"
+              <a href="Controller" class="btn btn-outline-danger"
                 >Quay lại trang chủ</a
               >
             </div>
             <!-- Image -->
             <div class="col-md-6">
               <img
-                src="../images/error.jpg"
+                src="images/error.jpg"
                 alt="Error Image"
                 class="img-fluid"
               />
