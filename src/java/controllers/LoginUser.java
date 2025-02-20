@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package controllers;
 
 import dao.CustomerDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,13 +20,10 @@ import models.Customer;
  *
  * @author nhutt
  */
-@WebServlet(name = "LoginUser", urlPatterns = {"/LoginUser"})
 public class LoginUser extends HttpServlet {
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
+   
+    /** 
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -49,28 +46,25 @@ public class LoginUser extends HttpServlet {
                 customer = custDAO.getCustomerByNameAndPhone(name, phoneNumber);
             } catch (Exception e) {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
-                out.println("Server error occurred while retrieving customer.");
+                request.getRequestDispatcher("Controller?action=Error").forward(request, response);
                 return;
             }
             // Process customer
             if (customer != null) {
                 HttpSession session = request.getSession();
                 session.setAttribute("user", customer);
-                response.setStatus(HttpServletResponse.SC_OK); // 200
-                out.println("Customer saved in session.");
-                response.sendRedirect("../pages/Dashboard.jsp");
-                
+                response.setStatus(HttpServletResponse.SC_OK); // 200    
+                request.getRequestDispatcher("Controller").forward(request, response);
             } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404
-                response.sendRedirect("../pages/Error404.html");
+                request.getRequestDispatcher("Controller?action=Error").forward(request, response);
             }
         }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
+    /** 
      * Handles the HTTP <code>GET</code> method.
-     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -78,13 +72,12 @@ public class LoginUser extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
         processRequest(request, response);
-    }
+    } 
 
-    /**
+    /** 
      * Handles the HTTP <code>POST</code> method.
-     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -92,13 +85,12 @@ public class LoginUser extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
+    /** 
      * Returns a short description of the servlet.
-     *
      * @return a String containing servlet description
      */
     @Override

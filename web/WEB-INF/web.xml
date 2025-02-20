@@ -8,6 +8,14 @@
         <servlet-name>LogoutUser</servlet-name>
         <servlet-class>controllers.LogoutUser</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>LoginUser</servlet-name>
+        <servlet-class>controllers.LoginUser</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Controller</servlet-name>
+        <servlet-class>controllers.Controller</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ChangeProfileUser</servlet-name>
         <url-pattern>/ChangeProfileUser</url-pattern>
@@ -16,12 +24,20 @@
         <servlet-name>LogoutUser</servlet-name>
         <url-pattern>/LogoutUser</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginUser</servlet-name>
+        <url-pattern>/LoginUser</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Controller</servlet-name>
+        <url-pattern>/Controller</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30
         </session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>Login.html</welcome-file>
+        <welcome-file>Controller</welcome-file>
     </welcome-file-list>
 </web-app>

@@ -1,9 +1,11 @@
+<%-- 
+    Document   : Login
+    Created on : Feb 19, 2025, 12:53:44 PM
+    Author     : nhutt
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html lang="vi">
     <head>
         <title>Đăng Nhập</title>
@@ -25,7 +27,7 @@ and open the template in the editor.
                 margin: 0;
                 -webkit-appearance: none;
             }
-            
+
         </style>
     </head>
     <body >
@@ -35,7 +37,7 @@ and open the template in the editor.
                 <div class="container">
                     <a
                         class="navbar-brand d-flex align-items-center gap-2"
-                        href="Login.html"
+                        href="Controller?action=Login"
                         >
                         <i class="bi bi-car-front"></i>
                         <span>Dịch Vụ Ô Tô</span>
@@ -64,7 +66,7 @@ and open the template in the editor.
                     <div class="col-lg-5 col-12 py-3">
                         <div class="p-5 bg-white rounded-4 shadow">
                             <h5 class="fw-bold mb-4">Đăng Nhập</h5>
-                            <form action="LoginUser"  method="POST" accept-charset="UTF-8" class="d-grid gap-3">
+                            <form action="./LoginUser"  method="POST" accept-charset="UTF-8" class="d-grid gap-3">
                                 <input
                                     name="name"
                                     type="text"
@@ -85,6 +87,7 @@ and open the template in the editor.
                                             type="checkbox"
                                             class="form-check-input"
                                             id="rememberMe"
+                                            name="rememberMe"
                                             />
                                         <label class="form-check-label" for="rememberMe"
                                                >Ghi nhớ đăng nhập</label
@@ -92,7 +95,7 @@ and open the template in the editor.
                                     </div>
                                     <a href="#" class="text-decoration-none">Quên mật khẩu?</a>
                                 </div>
-                                <button type="submit" class="btn btn-danger w-100">
+                                <button type="submit" class="btn btn-danger w-100" name="action" value="Login">
                                     Đăng Nhập
                                 </button>
                             </form>
@@ -125,5 +128,36 @@ and open the template in the editor.
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"
         ></script>
+        <script>
+            (function () {
+                const nameInput = document.querySelector('input[name="name"]');
+                const phoneInput = document.querySelector('input[name="phoneNumber"]');
+                const rememberMeCheckbox = document.querySelector('input[name="rememberMe"]');
+
+                if (nameInput && phoneInput && rememberMeCheckbox) {
+                    const savedUser = JSON.parse(localStorage.getItem("userData")) || {};
+
+                    if (savedUser.rememberMe) {
+                        nameInput.value = savedUser.name || "";
+                        phoneInput.value = savedUser.phone || "";
+                        rememberMeCheckbox.checked = true;
+                    }
+                    document.querySelector("form").addEventListener("submit", function () {
+                        if (rememberMeCheckbox.checked) {
+                            const userData = {
+                                name: nameInput.value,
+                                phone: phoneInput.value,
+                                rememberMe: true
+                            };
+                            localStorage.setItem("userData", JSON.stringify(userData));
+                        } else {
+                            localStorage.removeItem("userData");
+                        }
+                    });
+                }
+            })();
+        </script>
+
+
     </body>
 </html>
