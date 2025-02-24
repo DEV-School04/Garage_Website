@@ -7,7 +7,6 @@ import models.Customer;
 
 public class CustomerDAO {
 
-    // Utility method to close resources
     private void closeResources(Connection connect, PreparedStatement preSql, ResultSet resultTable) {
         try {
             if (resultTable != null) {
@@ -23,7 +22,7 @@ public class CustomerDAO {
             System.out.println("Error closing resources: " + e.getMessage());
         }
     }
-    
+
     public List<Customer> getCustomers(String fieldName, String fieldValue) {
         List<Customer> customerList = new ArrayList<>();
         Connection connect = null;
@@ -51,14 +50,13 @@ public class CustomerDAO {
                 customer.setCustAddress(resultTable.getString("cusAddress"));
                 customerList.add(customer);
             }
-
+            return customerList;
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println("Database error: " + e.getMessage());
+            return null;
         } finally {
             closeResources(connect, preSql, resultTable);
         }
-
-        return customerList;
     }
 
     public Customer getCustomerByNameAndPhone(String custName, String phone) {
@@ -96,28 +94,30 @@ public class CustomerDAO {
     }
 
     public boolean updateCustomer(String custID, String custName, String phone, String sex, String address) {
-    Connection connect = null;
-    PreparedStatement preSql = null;
-    String sql = "UPDATE Customer SET custName = ?, phone = ?, sex = ?, cusAddress = ? WHERE custID = ?"; // Fixed SQL Query
-    
-    try {
-        connect = MyConnection.getConnection();
-        preSql = connect.prepareStatement(sql);
-        
-        preSql.setString(1, custName);
-        preSql.setString(2, phone);
-        preSql.setString(3, sex);
-        preSql.setString(4, address);
-        preSql.setString(5, custID); 
-        
-        int rowsAffected = preSql.executeUpdate();
-        return rowsAffected > 0;
-    } catch (ClassNotFoundException | SQLException e) {
-        System.out.println("Database error: " + e.getMessage());
-        return false;
-    } finally {
-        closeResources(connect, preSql, null);
+        Connection connect = null;
+        PreparedStatement preSql = null;
+        String sql = "UPDATE Customer SET custName = ?, phone = ?, sex = ?, cusAddress = ? WHERE custID = ?";
+
+        try {
+            connect = MyConnection.getConnection();
+            preSql = connect.prepareStatement(sql);
+
+            preSql.setString(1, custName);
+            preSql.setString(2, phone);
+            preSql.setString(3, sex);
+            preSql.setString(4, address);
+            preSql.setString(5, custID);
+
+            int rowsAffected = preSql.executeUpdate();
+            return rowsAffected > 0;
+        } catch (ClassNotFoundException | SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return false;
+        } finally {
+            closeResources(connect, preSql, null);
+        }
     }
-}
+    
+    
 
 }

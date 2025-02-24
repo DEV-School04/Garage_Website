@@ -8,7 +8,6 @@ package controllers;
 import dao.CustomerDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -59,10 +58,12 @@ public class ChangeProfileUser extends HttpServlet {
                 request.getSession().removeAttribute("user");
                 request.getSession().setAttribute("user", new Customer(id, name, phone, sex, address));
                 request.setAttribute("messageUpdated", "Your profile was updated successfully!");
-                request.getRequestDispatcher("Controller").forward(request, response);
+                request.getRequestDispatcher("Controller?action=Dashboard").forward(request, response);
+
             } else {
                 request.setAttribute("messageUpdated", "Failed to update your profile. Please try again.");
-                request.getRequestDispatcher("Controller").forward(request, response);
+                request.getRequestDispatcher("Controller?action=Dashboard").forward(request, response);
+
             }
         }
     }
