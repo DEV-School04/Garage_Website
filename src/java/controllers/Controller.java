@@ -5,20 +5,30 @@
  */
 package controllers;
 
-import dao.CustomerDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import models.Customer;
+import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author nhutt
  */
-public class ChangeProfileUser extends HttpServlet {
+public class Controller extends HttpServlet {
+
+    private final String DASHBOARD = "Dashboard";
+    private final String LOGIN = "Login";
+    private final String LOGOUT = "Logout";
+    private final String CHANGE_PROFILE_USER = "ChangeProfileUser";
+    private final String INVOICES = "Invoices";
+    private final String INVOICE_DETAIL = "InvoiceDetail";
+    private final String ERROR = "Error";
+
+    public String getUrlPagesJSP(String namePages) {
+        return "./pages/" + namePages + ".jsp";
+    }
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -33,39 +43,53 @@ public class ChangeProfileUser extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
-        // Retrieve parameters
-        String id = request.getParameter("id");
-        String name = request.getParameter("name");
-        String phone = request.getParameter("phone");
-        String sex = request.getParameter("sex");
-        String address = request.getParameter("address");
 
-        try (PrintWriter out = response.getWriter()) {
+        HttpSession session = request.getSession(true);
+        String action = request.getParameter("action");
+        String url = "";
 
-            // Interact with DAO
-            CustomerDAO custDAO = new CustomerDAO();
-            boolean isUpdated;
-
-            try {
-                isUpdated = custDAO.updateCustomer(id, name, phone, sex, address);
-            } catch (Exception e) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
-                request.getRequestDispatcher("Controller?action=Error").forward(request, response);
-                return;
-            }
-
-            if (isUpdated) {
-                request.getSession().removeAttribute("user");
-                request.getSession().setAttribute("user", new Customer(id, name, phone, sex, address));
-                request.setAttribute("messageUpdated", "Your profile was updated successfully!");
-                request.getRequestDispatcher("Controller?action=Dashboard").forward(request, response);
-
-            } else {
-                request.setAttribute("messageUpdated", "Failed to update your profile. Please try again.");
-                request.getRequestDispatcher("Controller?action=Dashboard").forward(request, response);
-
-            }
+        if (session.getAttribute("user") == null) {
+            action = LOGIN;
+        } else if (action == null) {
+            action = DASHBOARD;
         }
+
+        if (action != null) {
+            switch (action) {
+                case LOGIN:
+                    url = getUrlPagesJSP(LOGIN);
+                    break;
+                case DASHBOARD:
+                    url = getUrlPagesJSP(DASHBOARD);
+                    break;
+                case LOGOUT:
+                    session.invalidate();
+                    url = getUrlPagesJSP(LOGIN);
+                    break;
+                case CHANGE_PROFILE_USER:
+                    url = CHANGE_PROFILE_USER;
+                    break;
+                case INVOICES:
+                    url = request.getAttribute("action") != null
+                            && request.getAttribute("action").toString().equalsIgnoreCase("Invoices")
+                            ? getUrlPagesJSP(INVOICES) : INVOICES;
+                    break;
+                case INVOICE_DETAIL:
+                    url = INVOICE_DETAIL;
+                    break;
+                case ERROR:
+                    url = getUrlPagesJSP(ERROR + response.getStatus());
+                    break;
+                default:
+                    url = getUrlPagesJSP(ERROR);
+                    break;
+            }
+        } else {
+            url = getUrlPagesJSP(ERROR);
+        }
+
+        // Forward request
+        request.getRequestDispatcher(url).forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
