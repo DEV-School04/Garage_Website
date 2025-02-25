@@ -6,6 +6,7 @@
 package controllers;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -25,9 +26,62 @@ public class Controller extends HttpServlet {
     private final String INVOICES = "Invoices";
     private final String INVOICE_DETAIL = "InvoiceDetail";
     private final String ERROR = "Error";
+    private final String ROLE = "role";
 
-    public String getUrlPagesJSP(String namePages) {
-        return "./pages/" + namePages + ".jsp";
+    public String getUrlPagesJSPOfUser(String namePages) {
+        return "./pages/customer/" + namePages + ".jsp";
+    }
+
+    private void SigupRole(HttpServletRequest request, String role) {
+        request.getSession(true).setAttribute(ROLE, role);
+    }
+
+    private void handlerControlllerFromCustomer(HttpServletRequest request, HttpServletResponse response, String role) throws ServletException, IOException {
+        HttpSession session = request.getSession(true);
+        session.setAttribute(ROLE, role);
+        String action = request.getParameter("action");
+        String url = "";
+        if (session.getAttribute("user") == null) {
+            action = LOGIN;
+        } else if (action == null) {
+            action = DASHBOARD;
+        }
+        if (action != null) {
+            switch (action) {
+                case LOGIN:
+                    url = getUrlPagesJSPOfUser(LOGIN);
+                    break;
+                case DASHBOARD:
+                    url = getUrlPagesJSPOfUser(DASHBOARD);
+                    break;
+                case LOGOUT:
+                    session.invalidate();
+                    url = "./pages/Role.jsp";
+                    break;
+                case CHANGE_PROFILE_USER:
+                    url = CHANGE_PROFILE_USER;
+                    break;
+                case INVOICES:
+                    url = request.getAttribute("action") != null
+                            && request.getAttribute("action").toString().equalsIgnoreCase("Invoices")
+                            ? getUrlPagesJSPOfUser(INVOICES) : INVOICES;
+                    break;
+                case INVOICE_DETAIL:
+                    url = INVOICE_DETAIL;
+                    break;
+                case ERROR:
+                    url = getUrlPagesJSPOfUser(ERROR + response.getStatus());
+                    break;
+                default:
+                    url = getUrlPagesJSPOfUser(ERROR);
+                    break;
+            }
+        } else {
+            url = getUrlPagesJSPOfUser(ERROR);
+        }
+
+        // Forward request
+        request.getRequestDispatcher(url).forward(request, response);
     }
 
     /**
@@ -44,52 +98,35 @@ public class Controller extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
 
-        HttpSession session = request.getSession(true);
-        String action = request.getParameter("action");
-        String url = "";
+        String roleInput = request.getParameter("role");
+        String roleSesstion = (String) request.getSession().getAttribute(ROLE);
 
-        if (session.getAttribute("user") == null) {
-            action = LOGIN;
-        } else if (action == null) {
-            action = DASHBOARD;
+        if (roleInput == null && roleSesstion == null) {
+            request.getRequestDispatcher("./pages/Role.jsp").forward(request, response);
+            return;
         }
 
-        if (action != null) {
-            switch (action) {
-                case LOGIN:
-                    url = getUrlPagesJSP(LOGIN);
+        if (roleInput != null && roleSesstion == null) {
+            SigupRole(request, roleInput);
+            roleSesstion = roleInput;
+        }
+
+        if (roleSesstion != null) {
+            switch (roleSesstion.toLowerCase()) {
+                case "customer":
+                    handlerControlllerFromCustomer(request, response, roleSesstion);
                     break;
-                case DASHBOARD:
-                    url = getUrlPagesJSP(DASHBOARD);
+                case "sale":
+                    response.getWriter().print("<h1>Role: Sale</h1>");
                     break;
-                case LOGOUT:
-                    session.invalidate();
-                    url = getUrlPagesJSP(LOGIN);
-                    break;
-                case CHANGE_PROFILE_USER:
-                    url = CHANGE_PROFILE_USER;
-                    break;
-                case INVOICES:
-                    url = request.getAttribute("action") != null
-                            && request.getAttribute("action").toString().equalsIgnoreCase("Invoices")
-                            ? getUrlPagesJSP(INVOICES) : INVOICES;
-                    break;
-                case INVOICE_DETAIL:
-                    url = INVOICE_DETAIL;
-                    break;
-                case ERROR:
-                    url = getUrlPagesJSP(ERROR + response.getStatus());
+                case "mechanics":
+                    response.getWriter().print("<h1>Role: Mechanics</h1>");
                     break;
                 default:
-                    url = getUrlPagesJSP(ERROR);
+                    request.getRequestDispatcher("./pages/Error.jsp").forward(request, response);
                     break;
             }
-        } else {
-            url = getUrlPagesJSP(ERROR);
         }
-
-        // Forward request
-        request.getRequestDispatcher(url).forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

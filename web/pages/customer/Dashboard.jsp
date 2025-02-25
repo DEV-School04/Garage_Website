@@ -47,14 +47,12 @@
     </head>
 
     <body>
-        <% Object userObj = session.getAttribute("user");
-            Customer cust = null;
-            if (userObj instanceof Customer) {
-                cust = (Customer) userObj;
-            } else {
+        <% Customer cust = (Customer) session.getAttribute("user");
+            if (cust == null) {
                 request.getRequestDispatcher("Controller").forward(request, response);
                 return;
-            }%>
+            }
+        %>
 
         <!-- Navigation Bar -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-transparent fixed-top">
