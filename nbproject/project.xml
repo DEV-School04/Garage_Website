@@ -5,6 +5,7 @@
         <data xmlns="http://www.netbeans.org/ns/web-project/3">
             <name>Garage_Website</name>
             <minimum-ant-version>1.6.5</minimum-ant-version>
+<<<<<<< HEAD
             <web-module-libraries/>
             <web-module-additional-libraries/>
             <source-roots>
@@ -12,6 +13,20 @@
             </source-roots>
             <test-roots>
                 <root id="test.src.dir" name="Test Packages"/>
+=======
+            <web-module-libraries>
+                <library dirs="200">
+                    <file>${file.reference.sqljdbc4.jar}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+            </web-module-libraries>
+            <web-module-additional-libraries/>
+            <source-roots>
+                <root id="src.dir"/>
+            </source-roots>
+            <test-roots>
+                <root id="test.src.dir"/>
+>>>>>>> 6f9956dc8e8e9b865e9819a53d99bde7343a3e1c
             </test-roots>
         </data>
     </configuration>
