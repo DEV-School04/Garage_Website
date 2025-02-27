@@ -1,0 +1,35 @@
+# Thư mục build
+target/
+build/
+
+# Các tệp phụ thuộc
+lib/
+
+# Cấu hình IDE
+.idea/
+.vscode/
+*.project
+*.classpath
+
+# Tệp nhạy cảm
+*.properties
+*.yml
+*.env
+
+# Các tệp log và tạm thời
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+
+# Tệp nén đã biên dịch
+*.war
+*.jar
+*.ear
+
+# Các tệp backup
+*.bak
+/WebApplication2/nbproject/private/
+/Garage_Website/nbproject/private/
+/dist/
