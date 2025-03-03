@@ -60,7 +60,7 @@
                 <div class="mb-3">
                     <select class="form-select role-select" name="role">
                         <option value="customer" selected>&#128100; Khách Hàng</option>
-                        <option value="sale">&#128179; Nhân Viên Bán Hàng</option>
+                        <option value="sales">&#128179; Nhân Viên Bán Hàng</option>
                         <option value="mechanics">&#128295; Thợ Máy</option>
                     </select>
                 </div>

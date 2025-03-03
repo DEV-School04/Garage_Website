@@ -8,19 +8,22 @@ package controllers;
 import dao.InvoiceDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import models.Invoice;
+import models.Car;
 
 /**
  *
  * @author nhutt
  */
-public class InvoiceDetail extends HttpServlet {
+public class Report extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -34,16 +37,21 @@ public class InvoiceDetail extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        request.setCharacterEncoding("UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
-            String invoiceID = request.getParameter("invoiceID");
-            InvoiceDAO invoiceDAO = new InvoiceDAO();
-            List<Invoice> invoices = invoiceDAO.getInvoices("invoiceID", invoiceID);
-            for (Invoice invoice : invoices) {
-                out.print(invoice.getInvoiceID());
-                out.print(invoice.getInvoiceDate());
+            List<Invoice> invoiceList = new InvoiceDAO().getInvoices(null, null);
+            Set<Integer> years = invoiceList.stream().map(invoice -> invoice.getInvoiceDate().getYear()).collect(Collectors.toSet());
+            HashMap<Integer, List<Car>> carsByYear = new HashMap<>();
+            for (Integer year : years) {
+                List<Car> carsForYear = invoiceList.stream()
+                        .filter(invoice -> invoice.getInvoiceDate().getYear() == year)
+                        .map(Invoice::getCar)
+                        .collect(Collectors.toList());
+                carsByYear.put(year, carsForYear);
             }
+            
+            request.setAttribute("carsByYear", carsByYear);
+            request.getRequestDispatcher("./pages/Report.jsp").forward(request, response);
         }
     }
 

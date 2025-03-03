@@ -10,6 +10,7 @@
 <%@page import="java.util.List"%>
 <%@page import="models.Invoice"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -66,90 +67,95 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <%
-                            List<Invoice> invoices = (List<Invoice>) request.getAttribute("invoices");
-                            if (invoices != null) {
-                                for (Invoice invoice : invoices) {
-                                    Customer customer = invoice.getCustomer();
-                                    SalesPerson salesPerson = invoice.getSalesPerson();
-                                    Car car = invoice.getCar();
-                        %>
-                        <tr>
-                            <td><%= invoice.getInvoiceID()%></td>
-                            <td><%= invoice.getInvoiceDate()%></td>
-                            <td><%= (customer != null) ? customer.getCustName() : "N/A"%></td>
-                            <td><%= (salesPerson != null) ? salesPerson.getSalesName() : "N/A"%></td>
-                            <td><%= (car != null) ? car.getModel() + " - " + car.getYear() : "N/A"%></td>
-                            <td>
-                                <button class="btn btn-danger text-white" data-bs-toggle="modal" data-bs-target="#invoiceModal<%= invoice.getInvoiceID()%>">
-                                    Xem chi tiết
-                                </button>
-                            </td>
-                        </tr>
-
-                        <!-- Modal hiển thị chi tiết hóa đơn -->
-                    <div class="modal fade" id="invoiceModal<%= invoice.getInvoiceID()%>" tabindex="-1" aria-labelledby="invoiceModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header bg-danger text-white">
-                                    <h5 class="modal-title"><i class="icon bi bi-receipt"></i> Hóa đơn #<%= invoice.getInvoiceID()%></h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p><i class="icon bi bi-calendar"></i> <strong>Ngày lập:</strong> <%= invoice.getInvoiceDate()%></p>
-
-                                    <div class="row">
-                                        <!-- Thông tin khách hàng -->
-                                        <div class="col-md-6">
-                                            <div class="info-box bg-light">
-                                                <h6 class="text-danger"><i class="icon bi bi-person-circle"></i> Khách hàng</h6>
-                                                <p><strong>Tên:</strong> <%= (customer != null) ? customer.getCustName() : "Không có dữ liệu"%></p>
-                                                <p><strong>Giới tính:</strong> <%= (salesPerson != null) ? (customer.getSex().equalsIgnoreCase("M") ? "Nam" : "Nữ") : "Không có dữ liệu"%></p>
-
-                                                <p><strong>Số điện thoại:</strong> <%= (customer != null) ? "0" + customer.getPhone() : "Không có dữ liệu"%></p>
-                                                <p><strong>Địa chỉ:</strong> <%= (customer != null) ? customer.getCustAddress() : "Không có dữ liệu"%></p>
+                        <c:choose>
+                            <c:when test="${not empty invoices}">
+                                <c:forEach var="invoice" items="${invoices}">
+                                    <tr>
+                                        <td><c:out value="${invoice.invoiceID}" /></td>
+                                        <td><c:out value="${invoice.invoiceDate}" /></td>
+                                        <td><c:out value="${invoice.customer != null ? invoice.customer.custName : 'N/A'}" /></td>
+                                        <td><c:out value="${invoice.salesPerson != null ? invoice.salesPerson.salesName : 'N/A'}" /></td>
+                                        <td><c:out value="${invoice.car != null ? invoice.car.model.concat(' - ').concat(invoice.car.year) : 'N/A'}" /></td>
+                                        <td>
+                                            <button class="btn btn-danger text-white" data-bs-toggle="modal" data-bs-target="#invoiceModal${invoice.invoiceID}">
+                                                Xem chi tiết
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <div class="modal fade" id="invoiceModal${invoice.invoiceID}" tabindex="-1" aria-labelledby="invoiceModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h5 class="modal-title"><i class="icon bi bi-receipt"></i> Hóa đơn #<c:out value="${invoice.invoiceID}" /></h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
-                                        </div>
+                                            <div class="modal-body">
+                                                <p><i class="icon bi bi-calendar"></i> <strong>Ngày lập:</strong> <c:out value="${invoice.invoiceDate}" /></p>
 
-                                        <!-- Thông tin nhân viên bán hàng -->
-                                        <div class="col-md-6">
-                                            <div class="info-box bg-light">
-                                                <h6 class="text-danger"><i class="icon bi bi-briefcase"></i> Nhân viên bán hàng</h6>
-                                                <p><strong>ID:</strong> <%= (salesPerson != null) ? salesPerson.getSalesID() : "Không có dữ liệu"%></p>
-                                                <p><strong>Tên:</strong> <%= (salesPerson != null) ? salesPerson.getSalesName() : "Không có dữ liệu"%></p>
-                                                <p><strong>Giới tính:</strong> <%= (salesPerson != null) ? (salesPerson.getSex().equalsIgnoreCase("M") ? "Nam" : "Nữ") : "Không có dữ liệu"%></p>
+                                                <div class="row">
+                                                    <!-- Thông tin khách hàng -->
+                                                    <div class="col-md-6">
+                                                        <div class="info-box bg-light">
+                                                            <h6 class="text-danger"><i class="icon bi bi-person-circle"></i> Khách hàng</h6>
+                                                            <p><strong>Tên:</strong> <c:out value="${invoice.customer != null ? invoice.customer.custName : 'Không có dữ liệu'}" /></p>
+                                                            <p><strong>Giới tính:</strong> 
+                                                                <c:choose>
+                                                                    <c:when test="${invoice.customer != null}">
+                                                                        <c:out value="${invoice.customer.sex == 'M' ? 'Nam' : 'Nữ'}" />
+                                                                    </c:when>
+                                                                    <c:otherwise>Không có dữ liệu</c:otherwise>
+                                                                </c:choose>
+                                                            </p>
+                                                            <p><strong>Số điện thoại:</strong> <c:out value="${invoice.customer != null ? '0'.concat(invoice.customer.phone) : 'Không có dữ liệu'}" /></p>
+                                                            <p><strong>Địa chỉ:</strong> <c:out value="${invoice.customer != null ? invoice.customer.custAddress : 'Không có dữ liệu'}" /></p>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Thông tin nhân viên bán hàng -->
+                                                    <div class="col-md-6">
+                                                        <div class="info-box bg-light">
+                                                            <h6 class="text-danger"><i class="icon bi bi-briefcase"></i> Nhân viên bán hàng</h6>
+                                                            <p><strong>ID:</strong> <c:out value="${invoice.salesPerson != null ? invoice.salesPerson.salesID : 'Không có dữ liệu'}" /></p>
+                                                            <p><strong>Tên:</strong> <c:out value="${invoice.salesPerson != null ? invoice.salesPerson.salesName : 'Không có dữ liệu'}" /></p>
+                                                            <p><strong>Giới tính:</strong> 
+                                                                <c:choose>
+                                                                    <c:when test="${invoice.salesPerson != null}">
+                                                                        <c:out value="${invoice.salesPerson.sex == 'M' ? 'Nam' : 'Nữ'}" />
+                                                                    </c:when>
+                                                                    <c:otherwise>Không có dữ liệu</c:otherwise>
+                                                                </c:choose>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Thông tin xe -->
+                                                <div class="info-box bg-light mt-3">
+                                                    <h6 class="text-danger"><i class="icon bi bi-car-front"></i> Xe</h6>
+                                                    <p><strong>Mã xe:</strong> <c:out value="${invoice.car != null ? invoice.car.carID : 'Không có dữ liệu'}" /></p>
+                                                    <p><strong>Model:</strong> <c:out value="${invoice.car != null ? invoice.car.model : 'Không có dữ liệu'}" /></p>
+                                                    <p><strong>Năm sản xuất:</strong> <c:out value="${invoice.car != null ? invoice.car.year : 'Không có dữ liệu'}" /></p>
+                                                    <p><strong>Màu sắc:</strong> <c:out value="${invoice.car != null ? invoice.car.colour : 'Không có dữ liệu'}" /></p>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- Thông tin xe -->
-                                    <div class="info-box bg-light mt-3">
-                                        <h6 class="text-danger"><i class="icon bi bi-car-front"></i> Xe</h6>
-                                        <p><strong>Mã xe:</strong> <%= (car != null) ? car.getCarID() : "Không có dữ liệu"%></p>
-                                        <p><strong>Model:</strong> <%= (car != null) ? car.getModel() : "Không có dữ liệu"%></p>
-                                        <p><strong>Năm sản xuất:</strong> <%= (car != null) ? car.getYear() : "Không có dữ liệu"%></p>
-                                        <p><strong>Màu sắc:</strong> <%= (car != null) ? car.getColour() : "Không có dữ liệu"%></p>
-                                    </div>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <% }
-                    } else { %>
-                    <tr>
-                        <td colspan="6" class="text-center">Không có hóa đơn nào</td>
-                    </tr>
-                    <% }%>
+                            </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <tr>
+                                <td colspan="6" class="text-center">Không có hóa đơn nào</td>
+                            </tr>
+                        </c:otherwise>
+                    </c:choose>
                     </tbody>
                 </table>
             </div>
-        </div>
-
-        <!-- Bootstrap JS -->
+        </div> 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

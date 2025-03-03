@@ -26,7 +26,7 @@
   </head>
   <body>
     <div class="vh-100 d-flex flex-column">
-      <!-- Navbar -->
+      
       <nav class="navbar navbar-expand py-lg-4 py-3 w-100 mb-auto px-lg-5">
         <div class="container">
           <a
@@ -39,7 +39,6 @@
         </div>
       </nav>
 
-      <!-- Main Content -->
       <div class="container m-auto px-lg-5">
         <div class="row align-items-center px-lg-5">
           <div class="col-lg-7 col-12 d-none d-lg-block">
@@ -60,7 +59,7 @@
             <div class="p-5 bg-white rounded-4 shadow">
               <h5 class="fw-bold mb-4">Đăng Nhập</h5>
               <form
-                action="./LoginUser"
+                action="./Controller"
                 method="POST"
                 accept-charset="UTF-8"
                 class="d-grid gap-3"
@@ -107,7 +106,6 @@
         </div>
       </div>
 
-      <!-- Footer -->
       <footer class="bg-light py-3 mt-auto">
         <div class="container d-flex justify-content-between">
           <p class="mb-0 text-muted small"></p>
