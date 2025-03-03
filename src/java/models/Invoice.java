@@ -4,24 +4,25 @@
  * and open the template in the editor.
  */
 package models;
-import java.util.Date;
+
+import java.time.LocalDate;
 
 /**
  *
  * @author nhutt
  */
+public class Invoice {
 
-public class Invoice{
     private String invoiceID;
-    private Date invoiceDate;
+    private LocalDate invoiceDate;
     private Customer customer;
     private SalesPerson salesPerson;
     private Car car;
-    
+
     public Invoice() {
     }
 
-    public Invoice(String invoiceID, Date invoiceDate, Customer customer, SalesPerson salesPerson, Car car) {
+    public Invoice(String invoiceID, LocalDate invoiceDate, Customer customer, SalesPerson salesPerson, Car car) {
         this.invoiceID = invoiceID;
         this.invoiceDate = invoiceDate;
         this.customer = customer;
@@ -37,11 +38,11 @@ public class Invoice{
         this.invoiceID = invoiceID;
     }
 
-    public Date getInvoiceDate() {
+    public LocalDate getInvoiceDate() {
         return invoiceDate;
     }
 
-    public void setInvoiceDate(Date invoiceDate) {
+    public void setInvoiceDate(LocalDate invoiceDate) {
         this.invoiceDate = invoiceDate;
     }
 
@@ -68,6 +69,5 @@ public class Invoice{
     public void setCar(Car car) {
         this.car = car;
     }
-    
-    
+
 }

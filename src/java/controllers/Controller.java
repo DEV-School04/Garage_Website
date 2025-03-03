@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import models.Customer;
 
 /**
  *
@@ -26,7 +27,7 @@ public class Controller extends HttpServlet {
     private final String INVOICES = "Invoices";
     private final String INVOICE_DETAIL = "InvoiceDetail";
     private final String ERROR = "Error";
-    private final String ROLE = "role";
+    private final String ROLE = "Role";
 
     public String getUrlPagesJSPOfUser(String namePages) {
         return "./pages/customer/" + namePages + ".jsp";
@@ -36,12 +37,12 @@ public class Controller extends HttpServlet {
         request.getSession(true).setAttribute(ROLE, role);
     }
 
-    private void handlerControlllerFromCustomer(HttpServletRequest request, HttpServletResponse response, String role) throws ServletException, IOException {
+    private void handlerControllerFromCustomer(HttpServletRequest request, HttpServletResponse response, String role) throws ServletException, IOException {
         HttpSession session = request.getSession(true);
         session.setAttribute(ROLE, role);
         String action = request.getParameter("action");
         String url = "";
-        if (session.getAttribute("user") == null) {
+        if ((Customer) session.getAttribute("user") == null) {
             action = LOGIN;
         } else if (action == null) {
             action = DASHBOARD;
@@ -50,6 +51,9 @@ public class Controller extends HttpServlet {
             switch (action) {
                 case LOGIN:
                     url = getUrlPagesJSPOfUser(LOGIN);
+                    if (request.getMethod().equalsIgnoreCase("POST")) {
+                        url = LOGIN + "User";
+                    }
                     break;
                 case DASHBOARD:
                     url = getUrlPagesJSPOfUser(DASHBOARD);
@@ -77,11 +81,22 @@ public class Controller extends HttpServlet {
                     break;
             }
         } else {
-            url = getUrlPagesJSPOfUser(ERROR);
+            url = getUrlPagesJSPOfUser(ERROR + "404");
         }
 
-        // Forward request
         request.getRequestDispatcher(url).forward(request, response);
+    }
+
+    private void handlerControllerFromSalesPerson(HttpServletRequest request, HttpServletResponse response, String role) throws ServletException, IOException {
+        HttpSession session = request.getSession(true);
+        session.setAttribute(ROLE, role);
+        response.getWriter().print("<h1>" + role + "</h1>");
+    }
+
+    private void handlerControllerFromMechanics(HttpServletRequest request, HttpServletResponse response, String role) throws ServletException, IOException {
+        HttpSession session = request.getSession(true);
+        session.setAttribute(ROLE, role);
+        response.getWriter().print("<h1>" + role + "</h1>");
     }
 
     /**
@@ -114,13 +129,14 @@ public class Controller extends HttpServlet {
         if (roleSesstion != null) {
             switch (roleSesstion.toLowerCase()) {
                 case "customer":
-                    handlerControlllerFromCustomer(request, response, roleSesstion);
+                    handlerControllerFromCustomer(request, response, roleSesstion);
                     break;
-                case "sale":
-                    response.getWriter().print("<h1>Role: Sale</h1>");
+                case "sales":
+                    handlerControllerFromSalesPerson(request, response, roleSesstion);
+
                     break;
                 case "mechanics":
-                    response.getWriter().print("<h1>Role: Mechanics</h1>");
+                    handlerControllerFromMechanics(request, response, roleSesstion);
                     break;
                 default:
                     request.getRequestDispatcher("./pages/Error.jsp").forward(request, response);

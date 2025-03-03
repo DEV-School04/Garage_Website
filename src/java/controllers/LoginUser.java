@@ -33,7 +33,8 @@ public class LoginUser extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");
-
+        System.out.println("Running");
+        System.out.println(request.getSession().getAttribute("Role"));
         try (PrintWriter out = response.getWriter()) {
             // Retrieve parameters
             String name = request.getParameter("name");
@@ -53,7 +54,7 @@ public class LoginUser extends HttpServlet {
             if (customer != null) {
                 HttpSession session = request.getSession();
                 session.setAttribute("user", customer);
-                response.setStatus(HttpServletResponse.SC_OK); // 200    
+                response.setStatus(HttpServletResponse.SC_OK); // 200
                 request.getRequestDispatcher("./Controller?action=Dashboard").forward(request, response);
             } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404
