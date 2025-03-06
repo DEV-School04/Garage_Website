@@ -47,7 +47,7 @@
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item"><a class="nav-link active" href="#">Trang Chủ</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Dịch Vụ</a></li>
-                        <li class="nav-item"><a class="nav-link" href="./Controller?action=Invoices">Hóa Đơn</a></li>
+                        <li class="nav-item"><a class="nav-link" href="Controller?action=Invoices">Hóa Đơn</a></li>
                     </ul>
                 </div>
                 <div class="dropdown">
@@ -60,7 +60,7 @@
                                 Edit Profile
                             </p>
                         </li>
-                        <li><a class="dropdown-item text-danger" href="./Controller?action=Logout">Logout</a></li>
+                        <li><a class="dropdown-item text-danger" href="Controller?action=Logout">Logout</a></li>
                     </ul>
                 </div>
             </div>

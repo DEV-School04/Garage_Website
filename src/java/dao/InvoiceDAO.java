@@ -1,10 +1,10 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lib.MyConnection;
@@ -102,7 +102,7 @@ public class InvoiceDAO {
         }
     }
 
-    public boolean createInvoice(String invoiceID, LocalDate invoiceDate, String customerID, String salesPersonID, String carID) {
+    public boolean createInvoice(String invoiceID, Date invoiceDate, String customerID, String salesPersonID, String carID) {
         Connection connect = null;
         PreparedStatement preSql = null;
         String sql = "INSERT INTO SalesInvoice (invoiceID, invoiceDate, custID, salesID, carID) VALUES (?, ?, ?, ?, ?)";
@@ -110,7 +110,7 @@ public class InvoiceDAO {
             connect = MyConnection.getConnection();
             preSql = connect.prepareStatement(sql);
             preSql.setString(1, invoiceID);
-            preSql.setDate(2, java.sql.Date.valueOf(invoiceDate));
+            preSql.setDate(2, invoiceDate);
             preSql.setString(3, customerID);
             preSql.setString(4, salesPersonID);
             preSql.setString(5, carID);
@@ -121,6 +121,30 @@ public class InvoiceDAO {
             return false;
         } finally {
             closeResources(connect, preSql, null);
+        }
+    }
+
+    public int getMaxInvoiceID() {
+        Connection connect = null;
+        PreparedStatement preSql = null;
+        ResultSet resultTable = null;
+        String sql = "SELECT MAX(invoiceID) as maxID FROM SalesInvoice";
+
+        try {
+            connect = MyConnection.getConnection();
+            preSql = connect.prepareStatement(sql);
+            resultTable = preSql.executeQuery();
+
+            if (resultTable.next()) {
+                int maxID = resultTable.getInt("maxID");
+                return maxID; 
+            }
+            return 0; 
+        } catch (ClassNotFoundException | SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return -1;
+        } finally {
+            closeResources(connect, preSql, resultTable);
         }
     }
 }

@@ -73,35 +73,4 @@ public class SalesPersonDAO {
         }
     }
 
-    // Lấy nhân viên bán hàng theo tên (tương tự getCustomerByNameAndPhone)
-    public SalesPerson getSalesPersonByName(String salesName) {
-        SalesPerson salesPerson = null;
-        Connection connect = null;
-        PreparedStatement preSql = null;
-        ResultSet resultTable = null;
-        String sql = "SELECT salesID, salesName, birthday, sex, salesAddress FROM SalesPerson WHERE salesName = ?";
-
-        try {
-            connect = MyConnection.getConnection();
-            preSql = connect.prepareStatement(sql);
-            preSql.setString(1, salesName);
-            resultTable = preSql.executeQuery();
-
-            if (resultTable.next()) {
-                salesPerson = new SalesPerson();
-                salesPerson.setSalesID(resultTable.getString("salesID").trim());
-                salesPerson.setSalesName(resultTable.getString("salesName").trim());
-                salesPerson.setBirthday(resultTable.getDate("birthday"));
-                salesPerson.setSex(resultTable.getString("sex").trim());
-                salesPerson.setSalesAddress(resultTable.getString("salesAddress").trim());
-            }
-            return salesPerson;
-
-        } catch (ClassNotFoundException | SQLException e) {
-            System.out.println("Database error: " + e.getMessage());
-            return null;
-        } finally {
-            closeResources(connect, preSql, resultTable);
-        }
-    }
 }

@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <filter>
+        <filter-name>AuthFilter</filter-name>
+        <filter-class>filters.AuthFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>InvoiceFilter</filter-name>
+        <filter-class>filters.InvoiceFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>InvoiceFilter</filter-name>
+        <url-pattern>/InvoiceCreate.jsp</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>AuthFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
     <servlet>
         <servlet-name>ChangeProfileUser</servlet-name>
         <servlet-class>controllers.ChangeProfileUser</servlet-class>
@@ -17,20 +33,12 @@
         <servlet-class>controllers.Controller</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>InvoiceServlet</servlet-name>
-        <servlet-class>controllers.InvoiceServlet</servlet-class>
+        <servlet-name>Report</servlet-name>
+        <servlet-class>controllers.Report</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>Invoices</servlet-name>
         <servlet-class>controllers.Invoices</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>InvoiceDetail</servlet-name>
-        <servlet-class>controllers.InvoiceDetail</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>Report</servlet-name>
-        <servlet-class>controllers.Report</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ChangeProfileUser</servlet-name>
@@ -49,20 +57,12 @@
         <url-pattern>/Controller</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>InvoiceServlet</servlet-name>
-        <url-pattern>/InvoiceServlet</url-pattern>
+        <servlet-name>Report</servlet-name>
+        <url-pattern>/Report</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Invoices</servlet-name>
         <url-pattern>/Invoices</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>InvoiceDetail</servlet-name>
-        <url-pattern>/InvoiceDetail</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>Report</servlet-name>
-        <url-pattern>/Report</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
