@@ -5,6 +5,7 @@
  */
 package models;
 
+import java.io.Serializable;
 import java.util.Date;
 
 
@@ -13,7 +14,7 @@ import java.util.Date;
  *
  * @author nhutt
  */
-public class SalesPerson {
+public class SalesPerson implements Serializable {
     private String salesID;
     private String salesName;
     private Date birthday;

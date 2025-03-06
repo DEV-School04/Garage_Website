@@ -6,7 +6,6 @@
 package controllers;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +24,6 @@ public class Controller extends HttpServlet {
     private final String LOGOUT = "Logout";
     private final String CHANGE_PROFILE_USER = "ChangeProfileUser";
     private final String INVOICES = "Invoices";
-    private final String INVOICE_DETAIL = "InvoiceDetail";
     private final String ERROR = "Error";
     private final String ROLE = "Role";
 
@@ -68,10 +66,8 @@ public class Controller extends HttpServlet {
                 case INVOICES:
                     url = request.getAttribute("action") != null
                             && request.getAttribute("action").toString().equalsIgnoreCase("Invoices")
+                            && request.getMethod().equalsIgnoreCase("GET")
                             ? getUrlPagesJSPOfUser(INVOICES) : INVOICES;
-                    break;
-                case INVOICE_DETAIL:
-                    url = INVOICE_DETAIL;
                     break;
                 case ERROR:
                     url = getUrlPagesJSPOfUser(ERROR + response.getStatus());
@@ -87,10 +83,19 @@ public class Controller extends HttpServlet {
         request.getRequestDispatcher(url).forward(request, response);
     }
 
-    private void handlerControllerFromSalesPerson(HttpServletRequest request, HttpServletResponse response, String role) throws ServletException, IOException {
+    private void handlerControllerFromSalesPerson(HttpServletRequest request, HttpServletResponse response, String role)
+            throws ServletException, IOException {
         HttpSession session = request.getSession(true);
         session.setAttribute(ROLE, role);
-        response.getWriter().print("<h1>" + role + "</h1>");
+        
+        response.setContentType("text/html;charset=UTF-8");
+        response.getWriter().print(
+                "<!DOCTYPE html>"
+                + "<html><body>"
+                + "<h1>Trang Sales Person</h1>"
+                + "<a href='./InvoiceCreate.jsp'>Create invoices</a>"
+                + "</body></html>"
+        );
     }
 
     private void handlerControllerFromMechanics(HttpServletRequest request, HttpServletResponse response, String role) throws ServletException, IOException {
@@ -133,7 +138,6 @@ public class Controller extends HttpServlet {
                     break;
                 case "sales":
                     handlerControllerFromSalesPerson(request, response, roleSesstion);
-
                     break;
                 case "mechanics":
                     handlerControllerFromMechanics(request, response, roleSesstion);
