@@ -42,7 +42,7 @@
                 <p class="error">${error}</p>
             </c:if>
 
-            <form action="Invoices" method="POST" class="p-4" id="invoiceForm">
+            <form action="Controller" method="POST" class="p-4" id="invoiceForm">
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <div class="info-box">
@@ -124,7 +124,6 @@
 
                 <div class="text-center">
                     <button type="submit" name="action" value="create" class="btn btn-success">Tạo hóa đơn</button>
-                    <a href="${pageContext.request.contextPath}/Invoices" class="btn btn-secondary">Hủy</a>
                 </div>
             </form>
         </div>
@@ -132,135 +131,100 @@
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script>
-            // Dữ liệu từ server
             const customers = [
-                <c:forEach var="customer" items="${customers}" varStatus="loop">
-                    {
-                        custID: "${customer.custID}",
-                        custName: "${customer.custName}",
-                        sex: "${customer.sex}",
-                        phone: "0${customer.phone}",
-                        custAddress: "${customer.custAddress}"
-                    }${loop.last ? '' : ','}
-                </c:forEach>
+            <c:forEach var="customer" items="${customers}" varStatus="loop">
+            {
+            custID: "${customer.custID}",
+                    custName: "${customer.custName}",
+                    sex: "${customer.sex}",
+                    phone: "0${customer.phone}",
+                    custAddress: "${customer.custAddress}"
+            }${loop.last ? '' : ','}
+            </c:forEach>
             ];
             const salesPersons = [
-                <c:forEach var="salesPerson" items="${salesPersons}" varStatus="loop">
-                    {
-                        salesID: "${salesPerson.salesID}",
-                        salesName: "${salesPerson.salesName}",
-                        sex: "${salesPerson.sex}",
-                        salesAddress: "${salesPerson.salesAddress}"
-                    }${loop.last ? '' : ','}
-                </c:forEach>
+            <c:forEach var="salesPerson" items="${salesPersons}" varStatus="loop">
+            {
+            salesID: "${salesPerson.salesID}",
+                    salesName: "${salesPerson.salesName}",
+                    sex: "${salesPerson.sex}",
+                    salesAddress: "${salesPerson.salesAddress}"
+            }${loop.last ? '' : ','}
+            </c:forEach>
             ];
             const cars = [
-                <c:forEach var="car" items="${cars}" varStatus="loop">
-                    {
-                        carID: "${car.carID}",
-                        model: "${car.model}",
-                        year: "${car.year}",
-                        colour: "${car.colour}"
-                    }${loop.last ? '' : ','}
-                </c:forEach>
+            <c:forEach var="car" items="${cars}" varStatus="loop">
+            {
+            carID: "${car.carID}",
+                    model: "${car.model}",
+                    year: "${car.year}",
+                    colour: "${car.colour}"
+            }${loop.last ? '' : ','}
+            </c:forEach>
             ];
-
-            // Gắn sự kiện change
+            document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('customerID').addEventListener('change', updateCustomerDetails);
             document.getElementById('salesPersonID').addEventListener('change', updateSalesPersonDetails);
             document.getElementById('carID').addEventListener('change', updateCarDetails);
-
-            // Hàm cập nhật thông tin khách hàng
+            updateCustomerDetails();
+            updateSalesPersonDetails();
+            updateCarDetails();
+            });
             function updateCustomerDetails() {
-                const customerID = document.getElementById('customerID').value.toString();
-                console.log('Selected Customer ID:', customerID); // Debug
-                const customer = customers.find(c => c.custID.toString() === customerID);
-                if (customer) {
-                    console.log('Found customer:', customer); // Debug
-                    document.getElementById('custName').textContent = customer.custName;
-                    document.getElementById('custSex').textContent = customer.sex === 'M' ? 'Nam' : 'Nữ';
-                    document.getElementById('custPhone').textContent = customer.phone;
-                    document.getElementById('custAddress').textContent = customer.custAddress;
-                } else {
-                    console.log('No customer found for ID:', customerID); // Debug
-                    clearCustomerDetails();
-                }
+            const customerID = document.getElementById('customerID').value.toString();
+            const customer = customers.find(c => c.custID.toString() === customerID);
+            if (customer) {
+            document.getElementById('custName').textContent = customer.custName;
+            document.getElementById('custSex').textContent = customer.sex === 'M' ? 'Nam' : 'Nữ';
+            document.getElementById('custPhone').textContent = customer.phone;
+            document.getElementById('custAddress').textContent = customer.custAddress;
+            } else {
+            clearCustomerDetails();
+            }
             }
 
-            // Hàm cập nhật thông tin nhân viên bán hàng
             function updateSalesPersonDetails() {
-                const salesPersonID = document.getElementById('salesPersonID').value.toString();
-                console.log('Selected Sales Person ID:', salesPersonID); // Debug
-                const salesPerson = salesPersons.find(s => s.salesID.toString() === salesPersonID);
-                if (salesPerson) {
-                    console.log('Found sales person:', salesPerson); // Debug
-                    document.getElementById('salesName').textContent = salesPerson.salesName;
-                    document.getElementById('salesSex').textContent = salesPerson.sex === 'M' ? 'Nam' : 'Nữ';
-                    document.getElementById('salesAddress').textContent = salesPerson.salesAddress;
-                } else {
-                    console.log('No sales person found for ID:', salesPersonID); // Debug
-                    clearSalesPersonDetails();
-                }
+            const salesPersonID = document.getElementById('salesPersonID').value.toString();
+            const salesPerson = salesPersons.find(s => s.salesID.toString() === salesPersonID);
+            if (salesPerson) {
+            document.getElementById('salesName').textContent = salesPerson.salesName;
+            document.getElementById('salesSex').textContent = salesPerson.sex === 'M' ? 'Nam' : 'Nữ';
+            document.getElementById('salesAddress').textContent = salesPerson.salesAddress;
+            } else {
+            clearSalesPersonDetails();
+            }
             }
 
-            // Hàm cập nhật thông tin xe
             function updateCarDetails() {
-                const carID = document.getElementById('carID').value.toString();
-                console.log('Selected Car ID:', carID); // Debug
-                const car = cars.find(c => c.carID.toString() === carID);
-                if (car) {
-                    console.log('Found car:', car); // Debug
-                    document.getElementById('carModel').textContent = car.model;
-                    document.getElementById('carYear').textContent = car.year;
-                    document.getElementById('carColour').textContent = car.colour;
-                } else {
-                    console.log('No car found for ID:', carID); // Debug
-                    clearCarDetails();
-                }
+            const carID = document.getElementById('carID').value.toString();
+            const car = cars.find(c => c.carID.toString() === carID);
+            if (car) {
+            document.getElementById('carModel').textContent = car.model;
+            document.getElementById('carYear').textContent = car.year;
+            document.getElementById('carColour').textContent = car.colour;
+            } else {
+            clearCarDetails();
+            }
             }
 
-            // Hàm xóa thông tin hiển thị
             function clearCustomerDetails() {
-                document.getElementById('custName').textContent = '';
-                document.getElementById('custSex').textContent = '';
-                document.getElementById('custPhone').textContent = '';
-                document.getElementById('custAddress').textContent = '';
+            document.getElementById('custName').textContent = '';
+            document.getElementById('custSex').textContent = '';
+            document.getElementById('custPhone').textContent = '';
+            document.getElementById('custAddress').textContent = '';
             }
 
             function clearSalesPersonDetails() {
-                document.getElementById('salesName').textContent = '';
-                document.getElementById('salesSex').textContent = '';
-                document.getElementById('salesAddress').textContent = '';
+            document.getElementById('salesName').textContent = '';
+            document.getElementById('salesSex').textContent = '';
+            document.getElementById('salesAddress').textContent = '';
             }
 
             function clearCarDetails() {
-                document.getElementById('carModel').textContent = '';
-                document.getElementById('carYear').textContent = '';
-                document.getElementById('carColour').textContent = '';
+            document.getElementById('carModel').textContent = '';
+            document.getElementById('carYear').textContent = '';
+            document.getElementById('carColour').textContent = '';
             }
-
-            // Xử lý khi trang được tải
-            window.onload = function() {
-                const customerID = document.getElementById('customerID').value;
-                const salesPersonID = document.getElementById('salesPersonID').value;
-                const carID = document.getElementById('carID').value;
-
-                console.log('Initial Customer ID:', customerID); // Debug
-                console.log('Initial Sales Person ID:', salesPersonID); // Debug
-                console.log('Initial Car ID:', carID); // Debug
-
-                if (customerID) updateCustomerDetails();
-                if (salesPersonID) updateSalesPersonDetails();
-                if (carID) updateCarDetails();
-
-                const message = document.getElementById('message');
-                if (message) {
-                    setTimeout(() => {
-                        message.classList.remove('show');
-                        setTimeout(() => message.remove(), 500);
-                    }, 5000);
-                }
-            };
         </script>
     </body>
 </html>

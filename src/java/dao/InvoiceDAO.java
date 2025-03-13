@@ -141,7 +141,6 @@ public class InvoiceDAO {
             }
             return 0; 
         } catch (ClassNotFoundException | SQLException e) {
-            System.out.println("Database error: " + e.getMessage());
             return -1;
         } finally {
             closeResources(connect, preSql, resultTable);

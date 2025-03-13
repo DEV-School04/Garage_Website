@@ -1,6 +1,9 @@
 package controllers;
 
+import dao.CarDAO;
+import dao.CustomerDAO;
 import dao.InvoiceDAO;
+import dao.SalesPersonDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Date;
@@ -9,9 +12,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import models.Car;
 import models.Customer;
-import models.Invoice;
+import models.SalesPerson;
 
 /**
  *
@@ -31,6 +34,7 @@ public class Invoices extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+
     }
 
     /**
@@ -44,32 +48,21 @@ public class Invoices extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        Customer customer = (Customer) session.getAttribute("user");
-        if (customer == null) {
-            response.sendRedirect(request.getContextPath() + "/Controller?action=Login");
-            return;
-        }
-
-        List<Invoice> invoices;
-        InvoiceDAO invoiceDAO = new InvoiceDAO();
+        CustomerDAO customerDAO = new CustomerDAO();
+        SalesPersonDAO salesPersonDAO = new SalesPersonDAO();
+        CarDAO carDAO = new CarDAO();
         try {
-            invoices = invoiceDAO.getInvoices("custID", customer.getCustID());
-        } catch (Exception e) {
-            request.setAttribute("error", "Lỗi khi lấy danh sách hóa đơn: " + e.getMessage());
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            request.getRequestDispatcher("/Error.jsp").forward(request, response);
-            return;
-        }
+            List<Customer> customers = customerDAO.getCustomers(null, null);
+            List<SalesPerson> salesPersons = salesPersonDAO.getSalesPersons(null, null);
+            List<Car> cars = carDAO.getCars(null, null);
 
-        if (invoices != null && !invoices.isEmpty()) {
-            request.setAttribute("invoices", invoices);
-            request.setAttribute("action", "Invoices");
-            request.getRequestDispatcher("/Controller").forward(request, response);
-        } else {
-            request.setAttribute("error", "Không tìm thấy hóa đơn nào.");
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            request.getRequestDispatcher("/Error.jsp").forward(request, response);
+            request.setAttribute("customers", customers);
+            request.setAttribute("salesPersons", salesPersons);
+            request.setAttribute("cars", cars);
+            request.getRequestDispatcher("/pages/InvoiceCreate.jsp").forward(request, response);
+        } catch (IOException | ServletException e) {
+            request.setAttribute("Error", "Không thể truy xuất dữ liệu");
+            request.getRequestDispatcher("/pages/Error500.jsp").forward(request, response);
         }
     }
 
@@ -87,44 +80,26 @@ public class Invoices extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
 
-        
         Date invoiceDate = Date.valueOf(request.getParameter("invoiceDate"));
         String custID = request.getParameter("customerID");
         String salesID = request.getParameter("salesPersonID");
         String carID = request.getParameter("carID");
 
-        try (PrintWriter out = response.getWriter()) {
-            
-            InvoiceDAO invoiceDAO = new InvoiceDAO();
-            boolean isCreated;
-
-            
-            int maxID = invoiceDAO.getMaxInvoiceID();
-            String newInvoiceID;
-            if (maxID == -1) {
-                request.getSession().setAttribute("messageCreated", "Error retrieving max invoice ID.");
-                response.sendRedirect("InvoiceCreate.jsp"); // Redirect về trang tạo hóa đơn mới
-                return;
-            } else {
-                int nextID = maxID + 1;
-                newInvoiceID = String.valueOf(nextID);
-            }
-
-            try {
-                isCreated = invoiceDAO.createInvoice(newInvoiceID, invoiceDate, custID, salesID, carID);
-            } catch (Exception e) {
-                request.getSession().setAttribute("messageCreated", "Error creating invoice: " + e.getMessage());
-                response.sendRedirect("InvoiceCreate.jsp");
-                return;
-            }
-
+        InvoiceDAO invoiceDAO = new InvoiceDAO();
+        boolean isCreated;
+        int maxID = invoiceDAO.getMaxInvoiceID();
+        String newInvoiceID = maxID + 1 + "";
+        try {
+            isCreated = invoiceDAO.createInvoice(newInvoiceID, invoiceDate, custID, salesID, carID);
             if (isCreated) {
-                request.getSession().setAttribute("messageCreated", "Invoice was created successfully!");
+                request.setAttribute("messageCreated", "Invoice was created successfully!");
             } else {
-                request.getSession().setAttribute("messageCreated", "Failed to create invoice. Please try again.");
+                request.setAttribute("messageCreated", "Failed to create invoice. Please try again.");
             }
-            response.sendRedirect("InvoiceCreate.jsp"); // Redirect về trang tạo hóa đơn mới
+        } catch (Exception e) {
+            request.setAttribute("messageCreated", "Không tạo được hóa đơn");
         }
+        request.getRequestDispatcher("/pages/InvoiceCreate.jsp").forward(request, response);
     }
 
     /**

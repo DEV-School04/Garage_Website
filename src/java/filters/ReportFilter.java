@@ -5,10 +5,13 @@
  */
 package filters;
 
+import dao.ReportDAO;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
+import java.util.Map;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -20,7 +23,7 @@ import javax.servlet.ServletResponse;
  *
  * @author nhutt
  */
-public class AuthFilter implements Filter {
+public class ReportFilter implements Filter {
     
     private static final boolean debug = true;
 
@@ -29,13 +32,13 @@ public class AuthFilter implements Filter {
     // configured. 
     private FilterConfig filterConfig = null;
     
-    public AuthFilter() {
+    public ReportFilter() {
     }    
     
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
-            log("AuthFilter:DoBeforeProcessing");
+            log("ReportFilter:DoBeforeProcessing");
         }
 
         // Write code here to process the request and/or response before
@@ -63,7 +66,7 @@ public class AuthFilter implements Filter {
     private void doAfterProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
-            log("AuthFilter:DoAfterProcessing");
+            log("ReportFilter:DoAfterProcessing");
         }
 
         // Write code here to process the request and/or response after
@@ -99,13 +102,32 @@ public class AuthFilter implements Filter {
             throws IOException, ServletException {
         
         if (debug) {
-            log("AuthFilter:doFilter()");
+            log("ReportFilter:doFilter()");
         }
         
         doBeforeProcessing(request, response);
         
         Throwable problem = null;
         try {
+            
+            try {
+                ReportDAO reportDAO = new ReportDAO();
+                
+                Map<Integer, Integer> carsByYear = reportDAO.getCarsSoldByYear();
+                Map<Integer, Double> revenueByYear = reportDAO.getRevenueByYear();
+                Map<String, Integer> topModels = reportDAO.getTopSellingModels();
+                List<Map.Entry<String, Integer>> topMechanics = reportDAO.getTopMechanics();
+                Map<String, Integer> partsUsedCount = reportDAO.getPartsUsedCount();
+
+                request.setAttribute("carsByYear", carsByYear);
+                request.setAttribute("revenueByYear", revenueByYear);
+                request.setAttribute("topModels", topModels);
+                request.setAttribute("topMechanics", topMechanics);
+                request.setAttribute("partsUsedCount", partsUsedCount);
+            } catch (Exception e) {
+                request.setAttribute("Error", "Không thể truy xuất dữ liệu!");
+            }
+
             chain.doFilter(request, response);
         } catch (Throwable t) {
             // If an exception is thrown somewhere down the filter chain,
@@ -159,7 +181,7 @@ public class AuthFilter implements Filter {
         this.filterConfig = filterConfig;
         if (filterConfig != null) {
             if (debug) {                
-                log("AuthFilter:Initializing filter");
+                log("ReportFilter:Initializing filter");
             }
         }
     }
@@ -170,9 +192,9 @@ public class AuthFilter implements Filter {
     @Override
     public String toString() {
         if (filterConfig == null) {
-            return ("AuthFilter()");
+            return ("ReportFilter()");
         }
-        StringBuffer sb = new StringBuffer("AuthFilter(");
+        StringBuffer sb = new StringBuffer("ReportFilter(");
         sb.append(filterConfig);
         sb.append(")");
         return (sb.toString());

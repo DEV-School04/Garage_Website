@@ -52,7 +52,10 @@
             </a>
 
             <h1 class="text-center text-danger fw-bold">Danh sách hóa đơn</h1>
-
+            <c:if test="${requestScope.Error}">
+                <p class="text-danger">${requestScope.Error}</p>
+                <c:remove scope="request" var="Error" />
+            </c:if>
             <!-- Invoice Table -->
             <div class="table-responsive">
                 <table class="table table-bordered text-center">
@@ -67,9 +70,10 @@
                         </tr>
                     </thead>
                     <tbody>
+                        
                         <c:choose>
                             <c:when test="${not empty invoices}">
-                                <c:forEach var="invoice" items="${invoices}">
+                                <c:forEach var="invoice" items="${invoices}" >
                                     <tr>
                                         <td><c:out value="${invoice.invoiceID}" /></td>
                                         <td><c:out value="${invoice.invoiceDate}" /></td>
@@ -148,7 +152,7 @@
                         </c:when>
                         <c:otherwise>
                             <tr>
-                                <td colspan="6" class="text-center">Không có hóa đơn nào</td>
+                                <td colspan="6" class="text-center">${requestScope.error}</td>
                             </tr>
                         </c:otherwise>
                     </c:choose>

@@ -26,18 +26,18 @@ public class Controller extends HttpServlet {
     private final String INVOICES = "Invoices";
     private final String ERROR = "Error";
     private final String ROLE = "Role";
+    private final String REPORT = "Report";
 
     public String getUrlPagesJSPOfUser(String namePages) {
-        return "./pages/customer/" + namePages + ".jsp";
+        return "/pages/customer/" + namePages + ".jsp";
     }
 
     private void SigupRole(HttpServletRequest request, String role) {
         request.getSession(true).setAttribute(ROLE, role);
     }
 
-    private void handlerControllerFromCustomer(HttpServletRequest request, HttpServletResponse response, String role) throws ServletException, IOException {
+    private void handlerControllerFromCustomer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(true);
-        session.setAttribute(ROLE, role);
         String action = request.getParameter("action");
         String url = "";
         if ((Customer) session.getAttribute("user") == null) {
@@ -58,50 +58,67 @@ public class Controller extends HttpServlet {
                     break;
                 case LOGOUT:
                     session.invalidate();
-                    url = "./pages/Role.jsp";
+                    url = "/pages/Role.jsp";
                     break;
                 case CHANGE_PROFILE_USER:
                     url = CHANGE_PROFILE_USER;
                     break;
                 case INVOICES:
-                    url = request.getAttribute("action") != null
-                            && request.getAttribute("action").toString().equalsIgnoreCase("Invoices")
-                            && request.getMethod().equalsIgnoreCase("GET")
-                            ? getUrlPagesJSPOfUser(INVOICES) : INVOICES;
+                    url = getUrlPagesJSPOfUser(INVOICES);
                     break;
                 case ERROR:
                     url = getUrlPagesJSPOfUser(ERROR + response.getStatus());
                     break;
                 default:
-                    url = getUrlPagesJSPOfUser(ERROR);
+                    url = "/pages/Error404.jsp";
                     break;
             }
         } else {
-            url = getUrlPagesJSPOfUser(ERROR + "404");
+            url = "/pages/Error404.jsp";
         }
 
         request.getRequestDispatcher(url).forward(request, response);
     }
 
-    private void handlerControllerFromSalesPerson(HttpServletRequest request, HttpServletResponse response, String role)
+    private void handlerControllerFromSalesPerson(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(true);
-        session.setAttribute(ROLE, role);
-        
         response.setContentType("text/html;charset=UTF-8");
+        String action = request.getParameter("action");
+        String url = "";
+
+        if (action == null) {
+            url = REPORT;
+        } else {
+            switch (action) {
+                case DASHBOARD:
+                    url = "/pages/Role.jsp";
+                    break;
+                case INVOICES:
+                    url = "Invoices";
+                    break;
+                case "create":
+                    url = "Invoices";
+                    break;
+                case REPORT:
+                    url = "/page/" + REPORT + ".jsp";
+                    break;
+                default:
+                    url = "/pages/Error404.jsp";
+                    break;
+            }
+        }
+        request.getRequestDispatcher(url).forward(request, response);
+    }
+
+    private void handlerControllerFromMechanics(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
         response.getWriter().print(
                 "<!DOCTYPE html>"
                 + "<html><body>"
-                + "<h1>Trang Sales Person</h1>"
-                + "<a href='./InvoiceCreate.jsp'>Create invoices</a>"
+                + "<h1>Trang Mechanics</h1>"
+                + "<a href='/Role.jsp'>Back</a>"
                 + "</body></html>"
         );
-    }
-
-    private void handlerControllerFromMechanics(HttpServletRequest request, HttpServletResponse response, String role) throws ServletException, IOException {
-        HttpSession session = request.getSession(true);
-        session.setAttribute(ROLE, role);
-        response.getWriter().print("<h1>" + role + "</h1>");
     }
 
     /**
@@ -120,31 +137,25 @@ public class Controller extends HttpServlet {
 
         String roleInput = request.getParameter("role");
         String roleSesstion = (String) request.getSession().getAttribute(ROLE);
-
-        if (roleInput == null && roleSesstion == null) {
-            request.getRequestDispatcher("./pages/Role.jsp").forward(request, response);
-            return;
-        }
-
-        if (roleInput != null && roleSesstion == null) {
+        if (roleSesstion == null && roleInput == null) {
+            request.getRequestDispatcher("/pages/Role.jsp").forward(request, response);
+        } else if (roleInput != null) {
             SigupRole(request, roleInput);
-            roleSesstion = roleInput;
+            roleSesstion = (String) request.getSession().getAttribute(ROLE);
         }
-
         if (roleSesstion != null) {
             switch (roleSesstion.toLowerCase()) {
                 case "customer":
-                    handlerControllerFromCustomer(request, response, roleSesstion);
+                    handlerControllerFromCustomer(request, response);
                     break;
                 case "sales":
-                    handlerControllerFromSalesPerson(request, response, roleSesstion);
+                    handlerControllerFromSalesPerson(request, response);
                     break;
                 case "mechanics":
-                    handlerControllerFromMechanics(request, response, roleSesstion);
+                    handlerControllerFromMechanics(request, response);
                     break;
                 default:
-                    request.getRequestDispatcher("./pages/Error.jsp").forward(request, response);
-                    break;
+                    request.getRequestDispatcher("/pages/Role.jsp").forward(request, response);
             }
         }
     }
