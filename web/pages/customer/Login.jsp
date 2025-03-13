@@ -90,7 +90,7 @@
                       >Ghi nhớ đăng nhập</label
                     >
                   </div>
-                  <a href="#" class="text-decoration-none">Quên mật khẩu?</a>
+                  
                 </div>
                 <button
                   type="submit"

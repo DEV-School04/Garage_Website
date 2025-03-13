@@ -5,9 +5,7 @@
  */
 package filters;
 
-import dao.CarDAO;
-import dao.CustomerDAO;
-import dao.SalesPersonDAO;
+import dao.InvoiceDAO;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -20,10 +18,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import models.Car;
 import models.Customer;
-import models.SalesPerson;
+import models.Invoice;
 
 /**
  *
@@ -115,28 +111,22 @@ public class InvoiceFilter implements Filter {
 
         Throwable problem = null;
         try {
-            HttpServletRequest httpRequest = (HttpServletRequest) request;
-            HttpSession session = httpRequest.getSession();
+            Customer customer = (Customer) (((HttpServletRequest) request).getSession().getAttribute("user"));
 
-            // Lấy dữ liệu từ DAO
-            CustomerDAO customerDAO = new CustomerDAO();
-            SalesPersonDAO salesPersonDAO = new SalesPersonDAO();
-            CarDAO carDAO = new CarDAO();
+            List<Invoice> invoices;
+            InvoiceDAO invoiceDAO = new InvoiceDAO();
+            try {
+                invoices = invoiceDAO.getInvoices("custID", customer.getCustID());
 
-            List<Customer> customers = customerDAO.getCustomers(null, null);
-            List<SalesPerson> salesPersons = salesPersonDAO.getSalesPersons(null, null);
-            List<Car> cars = carDAO.getCars(null, null);
+                if (invoices != null && !invoices.isEmpty()) {
+                    request.setAttribute("invoices", invoices);
+                } else {
+                    request.setAttribute("Error", "Không tìm thấy hóa đơn nào.");
+                }
+            } catch (Exception e) {
+                request.setAttribute("Error", "Lỗi khi lấy danh sách hóa đơn: " + e.getMessage());
+            }
 
-            // Ghi dữ liệu vào session nếu chưa có
-            if (session.getAttribute("customers") == null) {
-                session.setAttribute("customers", customers);
-            }
-            if (session.getAttribute("salesPersons") == null) {
-                session.setAttribute("salesPersons", salesPersons);
-            }
-            if (session.getAttribute("cars") == null) {
-                session.setAttribute("cars", cars);
-            }
             chain.doFilter(request, response);
         } catch (Throwable t) {
             // If an exception is thrown somewhere down the filter chain,
